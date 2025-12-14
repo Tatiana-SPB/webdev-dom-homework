@@ -10,7 +10,7 @@
 <body>
   <div class="container">
     <ul class="comments">
-      <li class="comment">
+      <!--<li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
           <div>12.02.22 12:18</div>
@@ -43,7 +43,7 @@
             <button class="like-button -active-like"></button>
           </div>
         </div>
-      </li>
+      </li>-->
     </ul>
     <div class="add-form">
       <input type="text" class="add-form-name" placeholder="Введите ваше имя" />
@@ -56,46 +56,82 @@
 </body>
 
 <script>
-  "use strict";
   let addFormNameEl = document.querySelector('.add-form-name');
   let addFormTextEl = document.querySelector('.add-form-text');
   const addFormButtonEl = document.querySelector('.add-form-button');
   const commentsEl = document.querySelector('.comments');
 
-  addFormButtonEl.addEventListener("click", () => {
+  const commentBox = [
+    { name: 'Глеб', when: '12.02.22 12:18', text: 'Это будет первый комментарий на этой странице', itLikes: false, counterLikes: 3 },
+    { name: 'Варвара Н.', when: '13.02.22 19:22', text: 'Мне нравится как оформлена эта страница! ❤', itLikes: true, counterLikes: 75 }
+  ]
 
-    if (addFormNameEl.value == 0 || addFormTextEl.value == 0) {
-      alert("Чтобы оставить комментарий, нужно указать Ваше имя и текст сообщения!");
-    } else {
+  const likeListeners = () => {
+    const itLikesButtons = document.querySelectorAll(".like-button");
 
-      let currentDateEl = new Date();
-      let fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
+    for (const itLikesButton of itLikesButtons) {
+      itLikesButton.addEventListener("click", () => {
 
-      let templateComment = document.createElement('li');
-      commentsEl.appendChild(templateComment);
-      templateComment.innerHTML = `<li class="comment">
+        const index = itLikesButton.dataset.index;
+        const comment = commentBox[index];
+
+        if (!comment.itLikes) {
+          comment.counterLikes++;
+          comment.itLikes = true;
+        } else {
+          comment.counterLikes--;
+          comment.itLikes = false;
+        }
+
+        renderComments();
+      });
+    }
+  };
+
+  const renderComments = () => {
+    const commentsHtml = commentBox
+      .map((comment, index) => {
+        return `<li class="comment" >
           <div class="comment-header">
-            <div>${addFormNameEl.value}</div>
-            <div>${fullDate}</div>
+            <div>${comment.name}</div>
+            <div>${comment.when}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${addFormTextEl.value}
+              ${comment.text}
             </div>
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">0</span>
-              <button class="like-button"></button>
+              <span class="likes-counter">${comment.counterLikes}</span>
+              <button class="like-button ${comment.itLikes ? "-active-like" : ""}" data-index="${index}"></button>
             </div>
           </div>
-        </li>`;
+        </li> `;
+      })
+      .join("");
+    commentsEl.innerHTML = commentsHtml;
+    likeListeners();
+  };
+
+  renderComments();
+
+  addFormButtonEl.addEventListener("click", () => {
+    if (!addFormNameEl.value || !addFormTextEl.value) {
+      alert("Чтобы оставить комментарий, нужно указать Ваше имя и текст сообщения!");
+    } else {
+
+      const currentDateEl = new Date();
+      const fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
+
+      commentBox.push({ name: addFormNameEl.value, when: fullDate, text: addFormTextEl.value, itLikes: false, counterLikes: 0 });
+      renderComments()
 
       addFormNameEl.value = "";
       addFormTextEl.value = "";
     }
+
   });
-  console.log("It works!");
 </script>
 
 </html>
