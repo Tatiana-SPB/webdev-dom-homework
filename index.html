@@ -62,16 +62,58 @@
   const addFormButtonEl = document.querySelector('.add-form-button');
   const commentsEl = document.querySelector('.comments');
 
+  const commentBox = [
+    { name: 'Глеб Фокин', when: '12.02.22 12:18', text: 'Это будет первый комментарий на этой странице', itLikes: false, counterLikes: 3 },
+    { name: 'Варвара Н.', when: '13.02.22 19:22', text: 'Мне нравится как оформлена эта страница! ❤', itLikes: true, counterLikes: 75 },
+  ]
+
+  const renderComments = () => {
+    const currentDateEl = new Date();
+    const fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
+
+    const templateComment = document.createElement('li');
+    commentsEl.appendChild(templateComment);
+
+
+    const commentsHtml = commentBox
+      .map((comment, index) => {
+        return `
+          <li class="comment">
+          <div class="comment-header">
+            <div>${addFormNameEl.value}</div>
+            <div>${fullDate}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${addFormTextEl.value}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">0</span>
+              <button class="like-button"></button>
+            </div>
+          </div>
+        </li>`
+      })
+      .join("");
+    commentsEl.innerHTML = commentsHtml;
+    //initDeleteListeners();
+  };
+
+  renderStudents();
+
+
   addFormButtonEl.addEventListener("click", () => {
 
     if (addFormNameEl.value == 0 || addFormTextEl.value == 0) {
       alert("Чтобы оставить комментарий, нужно указать Ваше имя и текст сообщения!");
     } else {
 
-      let currentDateEl = new Date();
-      let fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
+      const currentDateEl = new Date();
+      const fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
 
-      let templateComment = document.createElement('li');
+      const templateComment = document.createElement('li');
       commentsEl.appendChild(templateComment);
       templateComment.innerHTML = `<li class="comment">
           <div class="comment-header">
