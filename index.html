@@ -70,7 +70,8 @@
     const itLikesButtons = document.querySelectorAll(".like-button");
 
     for (const itLikesButton of itLikesButtons) {
-      itLikesButton.addEventListener("click", () => {
+      itLikesButton.addEventListener("click", (event) => {
+        event.stopPropagation();
 
         const index = itLikesButton.dataset.index;
         const comment = commentBox[index];
@@ -88,10 +89,22 @@
     }
   };
 
+  const commentsListeners = () => {
+    const comments = document.querySelectorAll("li");
+
+    for (const comment of comments) {
+      comment.addEventListener("click", () => {
+        const counterComment = commentBox[comment.dataset.index];
+        addFormTextEl.value = `Пользователь ${counterComment.name} сказал: "${counterComment.text}".`;
+      });
+    }
+  };
+  commentsListeners();
+
   const renderComments = () => {
     const commentsHtml = commentBox
       .map((comment, index) => {
-        return `<li class="comment" >
+        return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${comment.name}</div>
             <div>${comment.when}</div>
@@ -112,25 +125,33 @@
       .join("");
     commentsEl.innerHTML = commentsHtml;
     likeListeners();
+    commentsListeners();
   };
 
   renderComments();
 
   addFormButtonEl.addEventListener("click", () => {
-    if (!addFormNameEl.value || !addFormTextEl.value) {
+    let userName = addFormNameEl.value.replaceAll(">", "&gt;");
+    userName = userName.replaceAll("<", "&lt;");
+    let userText = addFormTextEl.value.replaceAll(">", "&gt;");
+    userText = userText.replaceAll("<", "&lt;");
+
+    if (!userName.trim() || !userText.trim()) {
       alert("Чтобы оставить комментарий, нужно указать Ваше имя и текст сообщения!");
     } else {
 
       const currentDateEl = new Date();
-      const fullDate = currentDateEl.getDate() + "." + Number(currentDateEl.getMonth() + 1) + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + currentDateEl.getMinutes();
+      let minutes = ('0' + currentDateEl.getMinutes()).slice(-2);
+      let month = ('0' + (currentDateEl.getMonth() + 1)).slice(-2);
 
-      commentBox.push({ name: addFormNameEl.value, when: fullDate, text: addFormTextEl.value, itLikes: false, counterLikes: 0 });
+      const fullDate = currentDateEl.getDate() + "." + month + "." + currentDateEl.getFullYear() + " " + currentDateEl.getHours() + ":" + minutes;
+
+      commentBox.push({ name: userName, when: fullDate, text: userText, itLikes: false, counterLikes: 0 });
       renderComments()
 
       addFormNameEl.value = "";
       addFormTextEl.value = "";
     }
-
   });
 </script>
 
